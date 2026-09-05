@@ -1,0 +1,179 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User account profile and quota details",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "avatar": { "type": "string" },
+        "accountStatus": { "type": "string", "enum": ["active", "disabled"] },
+        "subscriptionType": { "type": "string", "enum": ["free", "weekly", "monthly", "yearly"] },
+        "subscriptionStart": { "type": "string" },
+        "subscriptionEnd": { "type": "string" },
+        "gems": { "type": "number" },
+        "dailyVideosUsed": { "type": "number" },
+        "lastUsageDate": { "type": "string" },
+        "maxFPS": { "type": "number" },
+        "dailyLimit": { "type": "number" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["uid", "email", "name"]
+    },
+    "Project": {
+      "title": "Project",
+      "description": "Saved Quran Reel project configuration",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "title": { "type": "string" },
+        "surah": { "type": "number" },
+        "reciterId": { "type": "string" },
+        "backgroundId": { "type": "string" },
+        "settings": { "type": "object" },
+        "duration": { "type": "number" },
+        "fps": { "type": "number" },
+        "status": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "userId", "surah", "reciterId"]
+    },
+    "Video": {
+      "title": "Video",
+      "description": "Exported Quran reel video metadata",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "projectId": { "type": "string" },
+        "surah": { "type": "number" },
+        "reciter": { "type": "string" },
+        "duration": { "type": "number" },
+        "fps": { "type": "number" },
+        "status": { "type": "string" },
+        "videoUrl": { "type": "string" },
+        "thumbnailUrl": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "completedAt": { "type": "string" }
+      },
+      "required": ["id", "userId", "surah"]
+    },
+    "GemTransaction": {
+      "title": "GemTransaction",
+      "description": "Ledger of gem balance changes",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "type": { "type": "string", "enum": ["ADD", "DEDUCT", "SUBSCRIPTION_PURCHASE", "CODE_REDEEM"] },
+        "amount": { "type": "number" },
+        "balanceBefore": { "type": "number" },
+        "balanceAfter": { "type": "number" },
+        "reason": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "adminId": { "type": "string" }
+      },
+      "required": ["id", "userId", "type", "amount"]
+    },
+    "GemCode": {
+      "title": "GemCode",
+      "description": "Redeemable voucher codes for gems",
+      "type": "object",
+      "properties": {
+        "code": { "type": "string" },
+        "amount": { "type": "number" },
+        "maxUses": { "type": "number" },
+        "usedCount": { "type": "number" },
+        "isActive": { "type": "boolean" },
+        "createdAt": { "type": "string" },
+        "expiresAt": { "type": "string" }
+      },
+      "required": ["code", "amount", "maxUses"]
+    },
+    "SupportTicket": {
+      "title": "SupportTicket",
+      "description": "User helpdesk inquiries",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "userEmail": { "type": "string" },
+        "subject": { "type": "string" },
+        "message": { "type": "string" },
+        "reply": { "type": "string" },
+        "status": { "type": "string", "enum": ["open", "replied", "closed"] },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "userId", "subject", "message"]
+    },
+    "Announcement": {
+      "title": "Announcement",
+      "description": "System broadcast news",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "message": { "type": "string" },
+        "isActive": { "type": "boolean" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "title", "message"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Stores user profiles, subscriptions, gems and daily usage"
+    },
+    "/projects/{projectId}": {
+      "schema": "Project",
+      "description": "User created reel projects"
+    },
+    "/videos/{videoId}": {
+      "schema": "Video",
+      "description": "Saved exported videos"
+    },
+    "/gemTransactions/{transId}": {
+      "schema": "GemTransaction",
+      "description": "Audit trail for gem movements"
+    },
+    "/gemCodes/{codeId}": {
+      "schema": "GemCode",
+      "description": "Promotional and gift codes"
+    },
+    "/supportTickets/{ticketId}": {
+      "schema": "SupportTicket",
+      "description": "Customer support requests"
+    },
+    "/announcements/{announcementId}": {
+      "schema": "Announcement",
+      "description": "System announcements"
+    },
+    "/auditLogs/{logId}": {
+      "schema": { "$ref": "object" },
+      "description": "Admin security and modification logs"
+    },
+    "/errorLogs/{logId}": {
+      "schema": { "$ref": "object" },
+      "description": "Application crash and rendering error logs"
+    },
+    "/favorites/{favId}": {
+      "schema": { "$ref": "object" },
+      "description": "User favorite reciters and backgrounds"
+    },
+    "/backgrounds/{bgId}": {
+      "schema": { "$ref": "object" },
+      "description": "Custom backgrounds"
+    },
+    "/settings/{settingId}": {
+      "schema": { "$ref": "object" },
+      "description": "System configurations"
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "name": "GM Quran Reels",
+  "description": "Professional vertical Quran Reels & video generator with reciters, verse synchronization, customizable backgrounds, and real audio export.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

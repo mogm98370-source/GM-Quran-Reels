@@ -1,0 +1,106 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isSuperAdmin() {
+      return isAuthenticated() && (
+        request.auth.token.email == 'larblaablaybla@gmail.com' ||
+        request.auth.token.email == 'mogm98370@gmail.com' ||
+        (request.auth.token.admin == true)
+      );
+    }
+
+    // Users Collection
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && request.auth.uid == userId;
+      allow update: if isOwner(userId) || isSuperAdmin();
+      allow delete: if isSuperAdmin();
+    }
+
+    // Projects Collection
+    match /projects/{projectId} {
+      allow read, write: if isSuperAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+    }
+
+    // Videos Collection
+    match /videos/{videoId} {
+      allow read, delete: if isSuperAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+    }
+
+    // Gem Transactions Collection
+    match /gemTransactions/{transId} {
+      allow read: if isSuperAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
+      allow create: if isAuthenticated();
+      allow update, delete: if isSuperAdmin();
+    }
+
+    // Gem Codes Collection
+    match /gemCodes/{codeId} {
+      allow read: if isAuthenticated();
+      allow update: if isAuthenticated();
+      allow create, delete: if isSuperAdmin();
+    }
+
+    // Support Tickets Collection
+    match /supportTickets/{ticketId} {
+      allow read: if isSuperAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update: if isSuperAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
+      allow delete: if isSuperAdmin();
+    }
+
+    // Announcements Collection
+    match /announcements/{announcementId} {
+      allow read: if isAuthenticated();
+      allow write: if isSuperAdmin();
+    }
+
+    // Favorites Collection
+    match /favorites/{favId} {
+      allow read, write, delete: if isSuperAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+    }
+
+    // Backgrounds & Templates Collection
+    match /backgrounds/{bgId} {
+      allow read: if isAuthenticated();
+      allow write: if isSuperAdmin();
+    }
+
+    match /templates/{templateId} {
+      allow read: if isAuthenticated();
+      allow write: if isSuperAdmin();
+    }
+
+    // Audit Logs (Super Admin only)
+    match /auditLogs/{logId} {
+      allow read: if isSuperAdmin();
+      allow create: if isAuthenticated();
+      allow update, delete: if isSuperAdmin();
+    }
+
+    // Error Logs
+    match /errorLogs/{logId} {
+      allow read: if isSuperAdmin();
+      allow create: if isAuthenticated();
+      allow update, delete: if isSuperAdmin();
+    }
+
+    // Settings
+    match /settings/{settingId} {
+      allow read: if isAuthenticated();
+      allow write: if isSuperAdmin();
+    }
+  }
+}
